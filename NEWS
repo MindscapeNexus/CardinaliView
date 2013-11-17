@@ -1,0 +1,50 @@
+
+NEWS for CardinaliView package
+------------------------------
+
+Version 0.4 [2013-11-7]
+
+- Fixed issue causing memory problems when loading large datasets.
+- Fixed issue with the default intensity range when viewing
+	images that have been contrast-enhanced or smoothed.
+
+Version 0.3 [2013-7-5]
+
+- Added progress bars and detailed progress output.
+- Added support for multiple image slices.
+- Added option for loading peaks to explore an unprocessed dataset.
+- Added option to support interpolation on images.
+- Added option to support visualizing probabilities of a classes in
+	an 'MSImageSegmentation' object.
+- Added peak picking across an ROI or the full dataset.
+- Added export of plots and images, including trellis versions.
+
+Version 0.2 [2013-6-20]
+
+- Package renamed from internal code-name "Canary" to "Cardinal".
+- Split off "CardinalGUI" to a new package called "CardinaliView".
+- GUI completely re-written from scratch.
+- Now based on gWidgets and RGtk2 with tcltk as fallback.
+
+Version 0.1 [2013-6-6]
+- First internal release for Stanford Canary Center for Cancer
+	Early Detection as primary beta testers.
+- Implementation of MSImageSet S4 class; mass spectra are stored as a
+	flat matrix with rows as features and columns as pixels; original
+	data cube can be reconstructed dynamically using a position array;
+	spectra stored using environments to prevent redundant data copying.
+- Visualization that includes plotting ion images and mass spectra,
+	using both base graphics and lattice graphics, allowing trellis
+	display of multiple ion images and multipe mass spectra.
+- Pre-processing for that includes normalization, baseline correct,
+	peak-picking, peak-alignment, resampling, and binning.
+- Multivaritate statistical analysis includes PCA, PLS, and OPLS.
+- Supervised analysis includes a spatially-aware version of nearest
+	shrunken centroids, PLS-DA, and OPLS-DA.
+- Unsupervised analysis includes spatially-aware clustering based on
+	nearest shrunken centroids, and an implementation based on sparse
+	k-means.
+- GUI based on tcltk using rpanel that supports all major
+	processing and statistical analysis methods in the package,
+	except for PLS and OPLS.
+

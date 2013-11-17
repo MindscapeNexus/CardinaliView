@@ -1,0 +1,16 @@
+
+TODO for CardinaliView package
+------------------------------
+
+- allow plotting of results during processing
+- save ROI in dataset instead of global environment
+- ask to load peaks into dataset after saving
+- add unload to manage datasets in GUI
+- add class mask / summary plots to segmentation viewer
+- add overlay of multiple ion images using transparency
+- add option for importing reference peaks
+- PCA score scatter plot (for classification)
+- add selection of a range of m/z values
+- add optical image registration
+- add option for PLS classification
+- make device selection in tcltk work

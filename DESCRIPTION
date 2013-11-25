@@ -11,5 +11,5 @@ Description: A graphical user interface for visualization and analysis
 	and supervised classification.
 License: Artistic 2.0
 LazyLoad: yes
-Depends: Cardinal, gWidgets
+Depends: Cardinal, gWidgets, grDevices
 Suggests: gWidgetsRGtk2, RGtk2, cairoDevice, gWidgetstcltk, tcltk

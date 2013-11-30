@@ -2,7 +2,7 @@
 #### set up the GUI environments ####
 
 .guiState <- new.env()
-.userEnvironment <- globalenv()
+.userState <- globalenv()
 
 .onLoad <- function(libname, pkgname) {
 	options(device.ask.default=FALSE)

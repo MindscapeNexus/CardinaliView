@@ -1,17 +1,21 @@
 
-setClassUnion("PList", c("list", "environment"))
-
-#### Class for a GUI interface element
-## -----------------------------------
-setClass("iWidget",
+#### Class for iView GUI element ####
+## defined as an environment containing iView elements
+## ---------------------------------------------------
+setClass("iView",
 	slots = c(
-		interface = "list", # list of other iWidgets
-		members = "list", # list of GUI toolkit widgets
-		plist = "PList"), # widget preferences and settings
-	contains = "VIRTUAL",
+		plist = "environment"), # user preferences
+	contains = c("environment", "VIRTUAL"),
 	prototype = prototype(
-		interface = list(),
-		members = list(),
-		plist = list()))
+		plist = new.env(parent=emptyenv())))
 
+#### Virtual class for a GUI interface elements ####
+## a widget or family of widgets in an iView GUI interface
+## -------------------------------------------------------
+setClass("iViewWidget",
+	slots = c(
+		interface = "list"), # list of GUI toolkit widgets
+	contains = c("iView", "VIRTUAL"),
+	prototype = prototype(
+		interface = list()))
 

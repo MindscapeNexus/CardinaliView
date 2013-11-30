@@ -25,11 +25,7 @@ setMethod("isDirty", "iView", function(object, ...) {
 })
 
 setMethod("updateView", "iView", function(object, ...) {
-	if ( isDirty(object, ...) ) {
-		pData(object) <- list(...)
-		names <- ls(object)
-		for ( nm in names )
-			object[[nm]] <- updateView(object[[nm]], ...)
-	}
+	for ( nm in ls(names) )
+		object[[nm]] <- updateView(object[[nm]], ...)
 	object
 })

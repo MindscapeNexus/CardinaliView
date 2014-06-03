@@ -2,7 +2,15 @@
 NEWS for CardinaliView package
 ------------------------------
 
-Version 0.5 [2013-2-19]
+Version 0.6 [2014-6-3]
+
+o Rewritten with a new class structure using Reference Classes
+o New object-oriented design of all aspects of the GUI 
+o Focus on visualization and comparison of multiple datasets
+o Switch to a single-window tabbed design with expandable views
+o Old GUI still available
+
+Version 0.5 [2014-2-19]
 
 o New version for new Cardinal refactoring work for Bioconductor.
 

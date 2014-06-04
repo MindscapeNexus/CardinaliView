@@ -2,11 +2,13 @@
 #### Class for mass spectrum controls ####
 ## ---------------------------------------
 .iViewIonImageControls <- setRefClass("iViewIonImageControls",
-	fields = c(interface = "gGroup"),
-	contains = "iViewGroup",
+	contains = "iViewControls",
 	methods = list(
 		initialize = function(..., horizontal=FALSE, expand=TRUE) {
-			callSuper(..., horizontal=horizontal, expand=expand)
+			interface <<- gexpandgroup(...,
+				horizontal=horizontal,
+				expand=expand,
+				text="Ion Image")
 			# properties list
 			plist$img.zoom <<- numeric(1)
 			plist$img.zoom.linked <<- logical(1)
@@ -18,15 +20,9 @@
 			plist$img.intensity.zoom.linked <<- logical(1)
 			plist$img.intensity.min <<- numeric(1)
 			plist$img.intensity.max <<- numeric(1)
-			## ion image coordinate controls
-			widgets$img.frame <<- gframe(
-				container=interface,
-				horizontal=FALSE,
-				expand=FALSE,
-				text="Ion Image")
 			# coord - zoom
 			widgets$img.zoom.group <<- ggroup(
-				container=widgets$img.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$img.zoom.label <<- glabel(
 				container=widgets$img.zoom.group,
@@ -45,7 +41,7 @@
 				text="")
 			# coord - pixel
 			widgets$pixel.group <<- ggroup(
-				container=widgets$img.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$pixel.label <<- glabel(
 				container=widgets$pixel.group,
@@ -60,7 +56,7 @@
 				container=widgets$pixel.group,,
 				text="")
 			widgets$x.group <<- ggroup(
-				container=widgets$img.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$x.label <<- glabel(
 				container=widgets$x.group,
@@ -72,7 +68,7 @@
 				to=2^31-1,
 				by=1)
 			widgets$y.group <<- ggroup(
-				container=widgets$img.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$y.label <<- glabel(
 				container=widgets$y.group,
@@ -85,7 +81,7 @@
 				by=1)
 			## ion image intensity controls
 			widgets$img.intensity.frame <<- gframe(
-				container=widgets$img.frame,
+				container=interface,
 				horizontal=FALSE,
 				expand=FALSE,
 				text="Intensity Range")
@@ -167,18 +163,6 @@
 				obj=widgets$img.intensity.max,
 				handler=.changed.img.intensity.max,
 				action=.self)
-		},
-		update = function(...) {
-			dots <- list(...)
-			for ( par in names(plist) ) {
-				if ( par %in% names(dots) ) {
-					plist[[par]] <<- dots[[par]]
-					blockHandler(widgets[[par]], handlers[[par]])
-					svalue(widgets[[par]]) <<- dots[[par]]
-					unblockHandler(widgets[[par]], handlers[[par]])
-				}
-			}
-			callSuper(...)
 		}))
 
 .changed.img.zoom <- function(h, ...) {
@@ -187,16 +171,16 @@
 
 .changed.img.zoom.linked <- function(h, ...) {
 	img.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(img.zoom.linked=img.zoom.linked)
 }
 
 .changed.pixel <- function(h, ...) {
 	# need to fix to change coord at the same time!
 	pixel <- as.integer(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$pixel.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(pixel=pixel,
 			with.properties=c(pixel.linked=TRUE))
 	} else {
@@ -206,18 +190,18 @@
 
 .changed.pixel.linked <- function(h, ...) {
 	value <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(pixel.linked=value)
 }
 
 .changed.x <- function(h, ...) {
 	# need to fix to change pixel at the same time!
 	x <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
-	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$pixel.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(x=x,
-			with.properties=c(feature.linked=TRUE))
+			with.properties=c(pixel.linked=TRUE))
 	} else {
 		elt$update(x=x)
 	}
@@ -226,11 +210,11 @@
 .changed.y <- function(h, ...) {
 	# need to fix to change pixel at the same time!
 	y <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
-	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$pixel.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(y=y,
-			with.properties=c(feature.linked=TRUE))
+			with.properties=c(pixel.linked=TRUE))
 	} else {
 		elt$update(y=y)
 	}
@@ -242,15 +226,15 @@
 
 .changed.img.intensity.zoom.linked <- function(h, ...) {
 	img.intensity.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(img.intensity.zoom.linked=img.intensity.zoom.linked)
 }
 
 .changed.img.intensity.zoom.min <- function(h, ...) {
-	img.intensity.zoom.min <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	img.intensity.zoom.min <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$img.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(img.intensity.zoom.min=img.intensity.zoom.min,
 			with.properties=c(img.zoom.linked=TRUE))
 	} else {
@@ -259,10 +243,10 @@
 }
 
 .changed.img.intensity.zoom.max <- function(h, ...) {
-	img.intensity.zoom.max <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	img.intensity.zoom.max <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$img.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(img.intensity.zoom.max=img.intensity.zoom.max,
 			with.properties=c(img.zoom.linked=TRUE))
 	} else {

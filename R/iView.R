@@ -28,14 +28,12 @@ setRefClass("iView",
 				}
 		},
 		update = function(...) {
-			for ( child in children ) {
-				if ( child$isDirty(...) )
-					child$update(...)
-			}
+			for ( child in children )
+				child$update(...)
 		},
 		findParent = function(class) {
 			current <- parent
-			while ( !is.null(current) && class(current) != class )
+			while ( !is.null(current) && !is(current, class) )
 				current <- current$parent
 			current
 		},
@@ -132,7 +130,200 @@ setRefClass("iViewElement",
 			callSuper(...)
 		},
 		update = function(...) {
+			dots <- list(...)
+			for ( par in names(plist) ) {
+				if ( par %in% names(dots) )
+					plist[[par]] <<- dots[[par]]
+			}
 			refresh()
 			callSuper(...)
 		}))
+
+#### Class for a control panel ####
+## a group with updateable controls
+## --------------------------------
+.iViewControls <- setRefClass("iViewControls",
+	fields = c(interface = "guiContainer"),
+	contains = "iViewElement",
+	methods = list(
+		update = function(...) {
+			dots <- list(...)
+			for ( par in names(plist) ) {
+				if ( par %in% names(dots) ) {
+					plist[[par]] <<- dots[[par]]
+					blockHandler(widgets[[par]], handlers[[par]])
+					svalue(widgets[[par]]) <<- dots[[par]]
+					unblockHandler(widgets[[par]], handlers[[par]])
+				}
+			}
+			callSuper(...)
+		}))
+
+#### Class for a top-level a CardinaliView window ####
+## ----------------------------------------------------
+.CardinaliViewWindow <- setRefClass("CardinaliViewWindow",
+	contains = "iViewWindow",
+	methods = list(
+		initialize = function(..., title="CardinaliView") {
+			callSuper(..., title=title)
+			toolbar <- list()
+			toolbar$Datasets <- gaction(
+				label="Datasets",
+				icon="harddisk",
+				tooltip="Manage datasets")
+			toolbar$DataGroup = list(separator = TRUE)
+			toolbar$Import <- gaction(
+				label="Import",
+				icon="goto-bottom",
+				tooltip="Import dataset from disk")
+			toolbar$Export <- gaction(label="Export",
+				icon="goto-top",
+				tooltip="Write current dataset to disk")
+			toolbar$ActionGroup = list(separator = TRUE)
+			toolbar$Preprocess <- gaction(
+				label="Pre-Process",
+				icon="execute",
+				tooltip="Perform pre-processing on current dataset")
+			toolbar$Analysis <- gaction(
+				label="Analysis",
+				icon="plot",
+				tooltip="Perform statistical analysis on current dataset")
+			toolbar$Results <- gaction(
+				label="Results",
+				icon="contour",
+				tooltip="View results of previous analyses")
+			toolbar$WindowGroup = list(separator = TRUE)
+			toolbar$Window <- gaction(
+				label="New Window",
+				icon="add",
+				tooltip="Open a new window")
+			toolbar$Tab <- gaction(
+				label="New Tab",
+				icon="add",
+				tooltip="Open a new tab")
+			handlers$Datasets <<- addHandlerChanged(
+				obj=toolbar$Datasets,
+				handler=.clicked.Datasets,
+				action=.self)
+			handlers$Import <<- addHandlerChanged(
+				obj=toolbar$Import,
+				handler=.clicked.Import,
+				action=.self)
+			handlers$Export <<- addHandlerChanged(
+				obj=toolbar$Export,
+				handler=.clicked.Export,
+				action=.self)
+			handlers$Preprocess <<- addHandlerChanged(
+				obj=toolbar$Preprocess,
+				handler=.clicked.Preprocess,
+				action=.self)
+			handlers$Analysis <<- addHandlerChanged(
+				obj=toolbar$Analysis,
+				handler=.clicked.Analysis,
+				action=.self)
+			handlers$Results <<- addHandlerChanged(
+				obj=toolbar$Results,
+				handler=.clicked.Results,
+				action=.self)
+			handlers$Window <<- addHandlerChanged(
+				obj=toolbar$Window,
+				handler=.clicked.Window,
+				action=.self)
+			handlers$Tab <<- addHandlerChanged(
+				obj=toolbar$Tab,
+				handler=.clicked.Tab,
+				action=.self)
+			widgets$toolbar <<- gtoolbar(toolbarlist=toolbar, container=interface)
+			addElement(.CardinaliViewNotebook(), expand=TRUE)
+		}))
+
+#### Class for a tabbed interface of CardinaliView groups ####
+## -----------------------------------------------------------
+.CardinaliViewNotebook <- setRefClass("CardinaliViewNotebook",
+	contains = "iViewNotebook",
+	methods = list(
+		initialize = function(..., horizontal=FALSE,
+			use.scrollwindow=TRUE)
+		{
+			callSuper(..., closebuttons=TRUE, dontCloseTHese=1)
+			if ( length(children) == 0 ) {
+				addElement(.CardinaliViewGroup(), expand=TRUE,
+					label="(no dataset)")
+			}
+		}))
+
+#### Class for holding expandable CardinaliView instances ####
+## -----------------------------------------------------------
+.CardinaliViewGroup <- setRefClass("CardinaliViewGroup",
+	contains = "iViewGroup",
+	methods = list(
+		initialize = function(..., horizontal=FALSE,
+			use.scrollwindow=TRUE)
+		{
+			callSuper(..., horizontal=horizontal,
+				use.scrollwindow=use.scrollwindow)
+			if ( length(children) == 0 )
+				addElement(.iViewMSImageSet(), expand=TRUE)
+			for ( child in children )
+				visible(child$interface) <- TRUE
+		},
+		update = function(..., with.properties=NULL) {
+			if ( is.null(with.properties) ) {
+				callSuper(...)
+			} else {
+				for ( child in children ) {
+					properties <- child$plist[names(with.properties)]
+					if ( isTRUE(all(properties == with.properties)) )
+						child$update(...)
+				}
+			}
+		}))
+
+#### Virtual class for a single CardinaliView instance ####
+## --------------------------------------------------------
+.CardinaliView <- setRefClass("CardinaliView",
+	contains = c("iViewExpandGroup", "VIRTUAL"),
+	methods = list(
+		update = function(...) {
+			dots <- list(...)
+			for ( par in names(plist) ) {
+				if ( par %in% names(dots) )
+					plist[[par]] <<- dots[[par]]
+			}
+			callSuper(...)
+		}))
+
+.clicked.Datasets <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Import <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Export <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Preprocess <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Analysis <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Results <- function(h, ...) {
+	print("stub")
+}
+
+.clicked.Window <- function(h, ...) {
+	print("stub")	
+}
+
+.clicked.Tab <- function(h, ...) {
+	elt <- h$action$children[[1]]
+	elt$addElement(.CardinaliViewGroup(),
+		expand=TRUE, label="(no dataset)")
+}
 

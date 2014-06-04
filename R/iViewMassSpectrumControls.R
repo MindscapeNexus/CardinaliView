@@ -2,11 +2,13 @@
 #### Class for mass spectrum controls ####
 ## ---------------------------------------
 .iViewMassSpectrumControls <- setRefClass("iViewMassSpectrumControls",
-	fields = c(interface = "gGroup"),
-	contains = "iViewGroup",
+	contains = "iViewControls",
 	methods = list(
 		initialize = function(..., horizontal=FALSE, expand=TRUE) {
-			callSuper(..., horizontal=horizontal, expand=expand)
+			interface <<- gexpandgroup(...,
+				horizontal=horizontal,
+				expand=expand,
+				text="Mass Spectrum")
 			# properties list
 			plist$ms.zoom <<- numeric(1)
 			plist$ms.zoom.linked <<- logical(1)
@@ -20,15 +22,9 @@
 			plist$ms.intensity.zoom.linked <<- logical(1)
 			plist$ms.intensity.min <<- numeric(1)
 			plist$ms.intensity.max <<- numeric(1)
-			## mass spectrum m/z controls
-			widgets$ms.frame <<- gframe(
-				container=interface,
-				horizontal=FALSE,
-				expand=FALSE,
-				text="Mass Spectrum")
 			# m/z - zoom
 			widgets$ms.zoom.group <<- ggroup(
-				container=widgets$ms.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$ms.zoom.label <<- glabel(
 				container=widgets$ms.zoom.group,
@@ -47,7 +43,7 @@
 				text="")
 			# m/z - feature
 			widgets$feature.group <<- ggroup(
-				container=widgets$ms.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$feature.label <<- glabel(
 				container=widgets$feature.group,
@@ -62,7 +58,7 @@
 				container=widgets$feature.group,
 				text="")
 			widgets$mz.group <<- ggroup(
-				container=widgets$ms.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$mz.label <<- glabel(
 				container=widgets$mz.group,
@@ -72,7 +68,7 @@
 				expand=TRUE,
 				width=10)
 			widgets$mz.plusminus.group <<- ggroup(
-				container=widgets$ms.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$mz.plusminus.label <<- glabel(
 				container=widgets$mz.plusminus.group,
@@ -87,7 +83,7 @@
 				items=c("Da"))
 			# m/z - range
 			widgets$mz.range.group <<- ggroup(
-				container=widgets$ms.frame,
+				container=interface,
 				expand=FALSE)
 			widgets$mz.min.label <<- glabel(
 				container=widgets$mz.range.group,
@@ -105,7 +101,7 @@
 				width=5)
 			## mass spectrum intensity controls
 			widgets$ms.intensity.frame <<- gframe(
-				container=widgets$ms.frame,
+				container=interface,
 				horizontal=FALSE,
 				expand=FALSE,
 				text="Intensity Range")
@@ -149,9 +145,8 @@
 			# handlers
 			handlers$ms.zoom <<- addHandlerChanged(
 				obj=widgets$ms.zoom,
-				handler=function(h, ...) {
-					# do something
-				}, action=.self)
+				handler=.changed.ms.zoom,
+				action=.self)
 			handlers$ms.zoom.linked <<- addHandlerChanged(
 				obj=widgets$ms.zoom.linked,
 				handler=.changed.ms.zoom.linked,
@@ -196,18 +191,6 @@
 				obj=widgets$ms.intensity.max,
 				handler=.changed.ms.intensity.max,
 				action=.self)
-		},
-		update = function(...) {
-			dots <- list(...)
-			for ( par in names(plist) ) {
-				if ( par %in% names(dots) ) {
-					plist[[par]] <<- dots[[par]]
-					blockHandler(widgets[[par]], handlers[[par]])
-					svalue(widgets[[par]]) <<- dots[[par]]
-					unblockHandler(widgets[[par]], handlers[[par]])
-				}
-			}
-			callSuper(...)
 		}))
 
 .changed.ms.zoom <- function(h, ...) {
@@ -216,16 +199,16 @@
 
 .changed.ms.zoom.linked <- function(h, ...) {
 	ms.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(ms.zoom.linked=ms.zoom.linked)
 }
 
 .changed.feature <- function(h, ...) {
 	# need to fix to change mz at the same time!
 	feature <- as.integer(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(feature=feature,
 			with.properties=c(feature.linked=TRUE))
 	} else {
@@ -235,16 +218,16 @@
 
 .changed.feature.linked <- function(h, ...) {
 	value <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(feature.linked=value)
 }
 
 .changed.mz <- function(h, ...) {
 	# need to fix to change feature at the same time!
-	mz <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	mz <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(mz=mz,
 			with.properties=c(feature.linked=TRUE))
 	} else {
@@ -253,16 +236,16 @@
 }
 
 .changed.mz.plusminus <- function(h, ...) {
-	mz.plusminus <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	mz.plusminus <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(mz.plusminus=mz.plusminus)
 }
 
 .changed.mz.min <- function(h, ...) {
-	mz.min <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	mz.min <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(mz.min=mz.min,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -271,10 +254,10 @@
 }
 
 .changed.mz.max <- function(h, ...) {
-	mz.max <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	mz.max <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
+		elt <- elt$findParent("CardinaliViewGroup")
 		elt$update(mz.max=mz.max,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -288,30 +271,30 @@
 
 .changed.ms.intensity.zoom.linked <- function(h, ...) {
 	ms.intensity.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+	elt <- h$action$findParent("CardinaliView")
 	elt$update(ms.intensity.zoom.linked=ms.intensity.zoom.linked)
 }
 
-.changed.ms.intensity.zoom.min <- function(h, ...) {
-	ms.intensity.zoom.min <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+.changed.ms.intensity.min <- function(h, ...) {
+	ms.intensity.min <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
-		elt$update(ms.intensity.zoom.min=ms.intensity.zoom.min,
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(ms.intensity.min=ms.intensity.min,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
-		elt$update(ms.intensity.zoom.min=ms.intensity.zoom.min)
+		elt$update(ms.intensity.min=ms.intensity.min)
 	}
 }
 
-.changed.ms.intensity.zoom.max <- function(h, ...) {
-	ms.intensity.zoom.max <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("iViewMSImageSet")
+.changed.ms.intensity.max <- function(h, ...) {
+	ms.intensity.max <- round(as.numeric(svalue(h$obj)), digits=4)
+	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewMSImageGroup")
-		elt$update(ms.intensity.zoom.max=ms.intensity.zoom.max,
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(ms.intensity.max=ms.intensity.max,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
-		elt$update(ms.intensity.zoom.max=ms.intensity.zoom.max)
+		elt$update(ms.intensity.max=ms.intensity.max)
 	}
 }

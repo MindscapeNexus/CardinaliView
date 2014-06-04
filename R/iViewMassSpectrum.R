@@ -6,23 +6,31 @@
 	methods = list(
 		initialize = function(...) {
 			callSuper(...)
+			plist$pixel <<- numeric(1)
 			plist$mz <<- numeric(1)
-			handlers$changed <<- addHandlerChanged(interface,
-				handler=.changedMassSpectrum,
+			plist$mz.min <<- numeric(1)
+			plist$mz.max <<- numeric(1)
+			plist$ms.intensity.min <<- numeric(1)
+			plist$ms.intensity.max <<- numeric(1)
+			handlers$ANY <<- addHandlerChanged(
+				obj=interface,
+				handler=.changed.MassSpectrum,
 				action=.self)
 		},
 		refresh = function(...) {
 			callSuper(...)
-			.plotMassSpectrum(plist)
-		},
-		update = function(...) {
-			dots <- list(...)
-			if ( "mz" %in% names(dots) )
-				plist$mz <<- dots$mz
-			callSuper(...)
+			.plot.MassSpectrum(plist)
 		}))
 
-.changedMassSpectrum <- function(h, ...) {
-	self <- h$action
-	self$update(mz=h$x[[1]])
+.changed.MassSpectrum <- function(h, ...) {
+	# need to fix to change feature at the same time!
+	mz <- round(h$x[[1]], digits=4)
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$feature.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(mz=mz,
+			with.properties=c(feature.linked=TRUE))
+	} else {
+		elt$update(mz=mz)
+	}
 }

@@ -21,9 +21,10 @@
 .plot.IonImage <- function(plist) {
 	attach(plist)
 	tryCatch({
-		image(1:100, 1:100, matrix(1:(100^2), nrow=100),
-			xlim=c(0.5, 100.5),
-			ylim=c(0.5, 100.5),
+		image(1:100, 1:100, matrix(seq(from=1, to=100, length.out=100^2), nrow=100),
+			xlim=c(x.min, x.max),
+			ylim=c(x.min, x.max),
+			zlim=c(img.intensity.min, img.intensity.max),
 			useRaster=TRUE)
 		points(x, y, pch=4, lwd=2, col="black")
 		points(x, y, pch=4, lwd=1, col="white")

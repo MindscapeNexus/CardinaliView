@@ -115,9 +115,9 @@
 			widgets$ms.intensity.zoom <<- gspinbutton(
 				container=widgets$ms.intensity.zoom.group,
 				expand=TRUE,
-				from=100,
+				from=5,
 				to=1000,
-				by=25)
+				by=5)
 			widgets$ms.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$ms.intensity.zoom.group,
 				text="%")
@@ -191,10 +191,49 @@
 				obj=widgets$ms.intensity.max,
 				handler=.changed.ms.intensity.max,
 				action=.self)
+		},
+		update = function(...) {
+			callSuper(...)
+			dots <- list(...)
+			if ( any(c("mz.min", "mz.max") %in% names(dots)) ) {
+				abs.mz.min <- 0
+				abs.mz.max <- 100
+				ms.zoom <- 100 * abs(
+					(abs.mz.max - abs.mz.min) / 
+					(plist$mz.max - plist$mz.min))
+				plist$ms.zoom <<- ms.zoom
+				blockHandler(widgets$ms.zoom, handlers$ms.zoom)
+				svalue(widgets$ms.zoom) <<- ms.zoom
+				unblockHandler(widgets$ms.zoom, handlers$ms.zoom)
+			}
+			if ( any(c("ms.intensity.min", "ms.intensity.max") %in% names(dots)) ) {
+				abs.ms.intensity.min <- 0
+				abs.ms.intensity.max <- 100
+				ms.intensity.zoom <- 100 * abs(
+					(abs.ms.intensity.max - abs.ms.intensity.min) / 
+					(plist$ms.intensity.max - plist$ms.intensity.min))
+				plist$ms.intensity.zoom <<- ms.intensity.zoom
+				blockHandler(widgets$ms.intensity.zoom, handlers$ms.intensity.zoom)
+				svalue(widgets$ms.intensity.zoom) <<- ms.intensity.zoom
+				unblockHandler(widgets$ms.intensity.zoom, handlers$ms.intensity.zoom)
+			}
 		}))
 
 .changed.ms.zoom <- function(h, ...) {
-	print("stub")
+	abs.mz.min <- 0
+	abs.mz.max <- 100
+	percent <- as.numeric(svalue(h$obj)) / 100
+	mz <- h$action$plist$mz
+	mz.min <- mz + ((abs.mz.min - mz) / percent)
+	mz.max <- mz + ((abs.mz.max - mz) / percent)
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$ms.zoom.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(mz.min=mz.min, mz.max=mz.max,
+			with.properties=c(ms.zoom.linked=TRUE))
+	} else {
+		elt$update(mz.min=mz.min, mz.max=mz.max)
+	}
 }
 
 .changed.ms.zoom.linked <- function(h, ...) {
@@ -266,7 +305,22 @@
 }
 
 .changed.ms.intensity.zoom <- function(h, ...) {
-	print("stub")
+	abs.ms.intensity.min <- 0
+	abs.ms.intensity.max <- 100
+	percent <- as.numeric(svalue(h$obj)) / 100
+	ms.intensity.min <- abs.ms.intensity.min
+	ms.intensity.max <- abs.ms.intensity.min + 
+		((abs.ms.intensity.max  - abs.ms.intensity.min) / percent)
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$ms.intensity.zoom.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(ms.intensity.min=ms.intensity.min,
+			ms.intensity.max=ms.intensity.max,
+			with.properties=c(ms.intensity.zoom.linked=TRUE))
+	} else {
+		elt$update(ms.intensity.min=ms.intensity.min,
+			ms.intensity.max=ms.intensity.max)
+	}
 }
 
 .changed.ms.intensity.zoom.linked <- function(h, ...) {

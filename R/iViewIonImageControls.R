@@ -16,6 +16,10 @@
 			plist$pixel.linked <<- logical(1)
 			plist$x <<- numeric(1)
 			plist$y <<- numeric(1)
+			plist$x.min <<- numeric(1)
+			plist$x.max <<- numeric(1)
+			plist$y.min <<- numeric(1)
+			plist$y.max <<- numeric(1)
 			plist$img.intensity.zoom <<- numeric(1)
 			plist$img.intensity.zoom.linked <<- logical(1)
 			plist$img.intensity.min <<- numeric(1)
@@ -95,9 +99,9 @@
 			widgets$img.intensity.zoom <<- gspinbutton(
 				container=widgets$img.intensity.zoom.group,
 				expand=TRUE,
-				from=100,
+				from=5,
 				to=1000,
-				by=25)
+				by=5)
 			widgets$img.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$img.intensity.zoom.group,
 				text="%")
@@ -163,10 +167,58 @@
 				obj=widgets$img.intensity.max,
 				handler=.changed.img.intensity.max,
 				action=.self)
+		},
+		update = function(...) {
+			callSuper(...)
+			dots <- list(...)
+			if ( any(c("x.min", "x.max", "ymin", "y.max") %in% names(dots)) ) {
+				abs.x.min <- 0
+				abs.x.max <- 100
+				abs.y.min <- 0
+				abs.y.max <- 100
+				img.zoom <- 100 * sqrt(
+					((abs.x.max - abs.x.min) * (abs.y.max - abs.y.min)) / 
+					((plist$x.max - plist$x.min) * (plist$y.max - plist$y.min)))
+				plist$img.zoom <<- img.zoom
+				blockHandler(widgets$img.zoom, handlers$img.zoom)
+				svalue(widgets$img.zoom) <<- img.zoom
+				unblockHandler(widgets$img.zoom, handlers$img.zoom)
+			}
+			if ( any(c("img.intensity.min", "img.intensity.max") %in% names(dots)) ) {
+				abs.img.intensity.min <- 0
+				abs.img.intensity.max <- 100
+				img.intensity.zoom <- 100 * abs(
+					(abs.img.intensity.max - abs.img.intensity.min) / 
+					(plist$img.intensity.max - plist$img.intensity.min))
+				plist$img.intensity.zoom <<- img.intensity.zoom
+				blockHandler(widgets$img.intensity.zoom, handlers$img.intensity.zoom)
+				svalue(widgets$img.intensity.zoom) <<- img.intensity.zoom
+				unblockHandler(widgets$img.intensity.zoom, handlers$img.intensity.zoom)
+			}
 		}))
 
 .changed.img.zoom <- function(h, ...) {
-	print("stub")
+	abs.x.min <- 0
+	abs.x.max <- 100
+	abs.y.min <- 0
+	abs.y.max <- 100
+	percent <- as.numeric(svalue(h$obj)) / 100
+	x <- h$action$plist$x
+	y <- h$action$plist$y
+	x.min <- x + ((abs.x.min - x) / percent)
+	x.max <- x + ((abs.x.max - x) / percent)
+	y.min <- y + ((abs.y.min - y) / percent)
+	y.max <- y + ((abs.y.max - y) / percent)
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$img.zoom.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(x.min=x.min, x.max=x.max,
+			y.min=y.min, y.max=y.max,
+			with.properties=c(img.zoom.linked=TRUE))
+	} else {
+		elt$update(x.min=x.min, x.max=x.max,
+			y.min=y.min, y.max=y.max)
+	}
 }
 
 .changed.img.zoom.linked <- function(h, ...) {
@@ -221,7 +273,22 @@
 }
 
 .changed.img.intensity.zoom <- function(h, ...) {
-	print("stub")
+	abs.img.intensity.min <- 0
+	abs.img.intensity.max <- 100
+	percent <- as.numeric(svalue(h$obj)) / 100
+	img.intensity.min <- abs.img.intensity.min
+	img.intensity.max <- abs.img.intensity.min + 
+		((abs.img.intensity.max  - abs.img.intensity.min) / percent)
+	elt <- h$action$findParent("CardinaliView")
+	if ( elt$plist$img.intensity.zoom.linked ) {
+		elt <- elt$findParent("CardinaliViewGroup")
+		elt$update(img.intensity.min=img.intensity.min,
+			img.intensity.max=img.intensity.max,
+			with.properties=c(img.intensity.zoom.linked=TRUE))
+	} else {
+		elt$update(img.intensity.min=img.intensity.min,
+			img.intensity.max=img.intensity.max)
+	}
 }
 
 .changed.img.intensity.zoom.linked <- function(h, ...) {
@@ -230,7 +297,7 @@
 	elt$update(img.intensity.zoom.linked=img.intensity.zoom.linked)
 }
 
-.changed.img.intensity.zoom.min <- function(h, ...) {
+.changed.img.intensity.min <- function(h, ...) {
 	img.intensity.zoom.min <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$img.zoom.linked ) {
@@ -242,7 +309,7 @@
 	}
 }
 
-.changed.img.intensity.zoom.max <- function(h, ...) {
+.changed.img.intensity.max <- function(h, ...) {
 	img.intensity.zoom.max <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$img.zoom.linked ) {

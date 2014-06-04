@@ -151,9 +151,11 @@ setRefClass("iViewElement",
 			for ( par in names(plist) ) {
 				if ( par %in% names(dots) ) {
 					plist[[par]] <<- dots[[par]]
-					blockHandler(widgets[[par]], handlers[[par]])
-					svalue(widgets[[par]]) <<- dots[[par]]
-					unblockHandler(widgets[[par]], handlers[[par]])
+					if ( par %in% names(widgets) ) {
+						blockHandler(widgets[[par]], handlers[[par]])
+						svalue(widgets[[par]]) <<- dots[[par]]
+						unblockHandler(widgets[[par]], handlers[[par]])
+					}
 				}
 			}
 			callSuper(...)

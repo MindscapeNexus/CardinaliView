@@ -9,6 +9,10 @@
 			plist$feature <<- numeric(1)
 			plist$x <<- numeric(1)
 			plist$y <<- numeric(1)
+			plist$x.min <<- numeric(1)
+			plist$x.max <<- numeric(1)
+			plist$y.min <<- numeric(1)
+			plist$y.max <<- numeric(1)
 			plist$img.intensity.min <<- numeric(1)
 			plist$img.intensity.max <<- numeric(1)
 			handlers$ANY <<- addHandlerChanged(

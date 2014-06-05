@@ -21,7 +21,7 @@ setRefClass("iView",
 			dots <- match.call(expand.dots=FALSE)$...
 			any(names(plist) %in% names(dots))
 		},
-		refresh = function(all = FALSE) {
+		refresh = function(..., all = FALSE) {
 			if ( all )
 				for ( child in children ) {
 					child$refresh(all)
@@ -129,13 +129,14 @@ setRefClass("iViewElement",
 			visible(interface) <<- TRUE
 			callSuper(...)
 		},
-		update = function(...) {
+		update = function(..., blocking=FALSE) {
 			dots <- list(...)
 			for ( par in names(plist) ) {
 				if ( par %in% names(dots) )
 					plist[[par]] <<- dots[[par]]
 			}
-			refresh()
+			if ( !blocking )
+				refresh()
 			callSuper(...)
 		}))
 

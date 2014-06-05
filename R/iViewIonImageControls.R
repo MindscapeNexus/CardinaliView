@@ -35,7 +35,7 @@
 				container=widgets$img.zoom.group,
 				expand=TRUE,
 				from=100,
-				to=1000,
+				to=10^9,
 				by=25)
 			widgets$img.zoomprcnt.label <<- glabel(
 				container=widgets$img.zoom.group,
@@ -99,8 +99,8 @@
 			widgets$img.intensity.zoom <<- gspinbutton(
 				container=widgets$img.intensity.zoom.group,
 				expand=TRUE,
-				from=5,
-				to=1000,
+				from=0,
+				to=10^9,
 				by=5)
 			widgets$img.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$img.intensity.zoom.group,
@@ -203,6 +203,7 @@
 	abs.y.min <- 0
 	abs.y.max <- 100
 	percent <- as.numeric(svalue(h$obj)) / 100
+	if ( percent <= 0 ) percent <- 1
 	x <- h$action$plist$x
 	y <- h$action$plist$y
 	x.min <- x + ((abs.x.min - x) / percent)
@@ -228,7 +229,7 @@
 }
 
 .changed.pixel <- function(h, ...) {
-	# need to fix to change coord at the same time!
+	# NEED TO FIX TO CHANGE X AND Y AT THE SAME TIME
 	pixel <- as.integer(svalue(h$obj))
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$pixel.linked ) {
@@ -247,7 +248,7 @@
 }
 
 .changed.x <- function(h, ...) {
-	# need to fix to change pixel at the same time!
+	# NEED TO FIX TO CHANGE PIXEL AT THE SAME TIME!
 	x <- as.numeric(svalue(h$obj))
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$pixel.linked ) {
@@ -260,7 +261,7 @@
 }
 
 .changed.y <- function(h, ...) {
-	# need to fix to change pixel at the same time!
+	# NEED TO FIX TO CHANGE PIXEL AT THE SAME TIME!
 	y <- as.numeric(svalue(h$obj))
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$pixel.linked ) {
@@ -276,6 +277,7 @@
 	abs.img.intensity.min <- 0
 	abs.img.intensity.max <- 100
 	percent <- as.numeric(svalue(h$obj)) / 100
+	if ( percent <= 0 ) percent <- 0.05
 	img.intensity.min <- abs.img.intensity.min
 	img.intensity.max <- abs.img.intensity.min + 
 		((abs.img.intensity.max  - abs.img.intensity.min) / percent)

@@ -23,14 +23,38 @@
 		}))
 
 .changed.MassSpectrum <- function(h, ...) {
-	# need to fix to change feature at the same time!
-	mz <- round(h$x[[1]], digits=4)
-	elt <- h$action$findParent("CardinaliView")
-	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
-		elt$update(mz=mz,
-			with.properties=c(feature.linked=TRUE))
+	# NEED TO FIX TO CHANGE FEATURE AT THE SAME TIME!
+	if ( abs(diff(h$x)) < 1e-6 || abs(diff(h$y)) < 1e-6 ) {
+		mz <- round(h$x[[1]], digits=4)
+		elt <- h$action$findParent("CardinaliView")
+		if ( elt$plist$feature.linked ) {
+			elt <- elt$findParent("CardinaliViewGroup")
+			elt$update(mz=mz,
+				with.properties=c(feature.linked=TRUE))
+		} else {
+			elt$update(mz=mz)
+		}
 	} else {
-		elt$update(mz=mz)
+		mz.min <- min(round(h$x, digits=4))
+		mz.max <- max(round(h$x, digits=4))
+		ms.intensity.min <- min(round(h$y, digits=4))
+		ms.intensity.max <- max(round(h$y, digits=4))
+		elt <- h$action$findParent("CardinaliView")
+		if ( elt$plist$ms.zoom.linked ) {
+			elt2 <- elt$findParent("CardinaliViewGroup")
+			elt2$update(mz.min=mz.min, mz.max=mz.max,
+				with.properties=c(ms.zoom.linked=TRUE))
+		} else {
+			elt$update(mz.min=mz.min, mz.max=mz.max)
+		}
+		if ( elt$plist$ms.intensity.zoom.linked ) {
+			elt2 <- elt$findParent("CardinaliViewGroup")
+			elt2$update(ms.intensity.min=ms.intensity.min,
+				ms.intensity.max=ms.intensity.max,
+				with.properties=c(ms.intensity.zoom.linked=TRUE))
+		} else {
+			elt$update(ms.intensity.min=ms.intensity.min,
+				ms.intensity.max=ms.intensity.max)
+		}
 	}
 }

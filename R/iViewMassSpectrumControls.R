@@ -33,7 +33,7 @@
 				container=widgets$ms.zoom.group,
 				expand=TRUE,
 				from=100,
-				to=1000,
+				to=10^9,
 				by=25)
 			widgets$ms.zoomprcnt.label <<- glabel(
 				container=widgets$ms.zoom.group,
@@ -115,8 +115,8 @@
 			widgets$ms.intensity.zoom <<- gspinbutton(
 				container=widgets$ms.intensity.zoom.group,
 				expand=TRUE,
-				from=5,
-				to=1000,
+				from=0,
+				to=10^10,
 				by=5)
 			widgets$ms.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$ms.intensity.zoom.group,
@@ -223,6 +223,7 @@
 	abs.mz.min <- 0
 	abs.mz.max <- 100
 	percent <- as.numeric(svalue(h$obj)) / 100
+	if ( percent <= 0 ) percent <- 1
 	mz <- h$action$plist$mz
 	mz.min <- mz + ((abs.mz.min - mz) / percent)
 	mz.max <- mz + ((abs.mz.max - mz) / percent)
@@ -243,7 +244,7 @@
 }
 
 .changed.feature <- function(h, ...) {
-	# need to fix to change mz at the same time!
+	# NEED TO FIX TO CHANGE MZ AT THE SAME TIME!
 	feature <- as.integer(svalue(h$obj))
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$feature.linked ) {
@@ -262,7 +263,7 @@
 }
 
 .changed.mz <- function(h, ...) {
-	# need to fix to change feature at the same time!
+	# NEED TO FIX TO CHANGE FEATURE AT THE SAME TIME
 	mz <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("CardinaliView")
 	if ( elt$plist$feature.linked ) {
@@ -308,6 +309,7 @@
 	abs.ms.intensity.min <- 0
 	abs.ms.intensity.max <- 100
 	percent <- as.numeric(svalue(h$obj)) / 100
+	if ( percent <= 0 ) percent <- 0.05
 	ms.intensity.min <- abs.ms.intensity.min
 	ms.intensity.max <- abs.ms.intensity.min + 
 		((abs.ms.intensity.max  - abs.ms.intensity.min) / percent)

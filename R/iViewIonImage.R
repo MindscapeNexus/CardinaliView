@@ -26,15 +26,32 @@
 		}))
 
 .changed.IonImage <- function(h, ...) {
-	# need to fix to change pixel at the same time!
-	x <- h$x[[1]]
-	y <- h$y[[1]]
-	elt <- h$action$findParent("CardinaliView")
-	if ( elt$plist$pixel.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
-		elt$update(x=x, y=y,
-			with.properties=c(pixel.linked=TRUE))
+	# NEED TO FIX TO CHANGE PIXEL AT THE SAME TIME!
+	if ( abs(diff(h$x)) < 1 || abs(diff(h$y)) < 1 ) {
+		x <- h$x[[1]]
+		y <- h$y[[1]]
+		elt <- h$action$findParent("CardinaliView")
+		if ( elt$plist$pixel.linked ) {
+			elt <- elt$findParent("CardinaliViewGroup")
+			elt$update(x=x, y=y,
+				with.properties=c(pixel.linked=TRUE))
+		} else {
+			elt$update(x=x, y=y)
+		}
 	} else {
-		elt$update(x=x, y=y)
+		x.min <- min(as.integer(h$x))
+		x.max <- max(as.integer(h$x))
+		y.min <- min(as.integer(h$y))
+		y.max <- max(as.integer(h$y))
+		elt <- h$action$findParent("CardinaliView")
+		if ( elt$plist$img.zoom.linked ) {
+			elt <- elt$findParent("CardinaliViewGroup")
+			elt$update(x.min=x.min, x.max=x.max,
+				y.min=y.min, y.max=y.max,
+				with.properties=c(img.zoom.linked=TRUE))
+		} else {
+			elt$update(x.min=x.min, x.max=x.max,
+				y.min=y.min, y.max=y.max)
+		}
 	}
 }

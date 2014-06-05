@@ -49,19 +49,6 @@ setRefClass("iView",
 			cat("children:", length(children), "\n")
 		}))
 
-#### Class for a top-level gWindow ####
-## a top-level window for GUI elements
-## -----------------------------------
-.iViewWindow <- setRefClass("iViewWindow",
-	fields = c(
-		parent = "NULL",
-		interface = "gWindow"),
-	contains = "iView",
-	methods = list(
-		initialize = function(..., visible=FALSE) {
-			interface <<- gwindow(..., visible=visible)
-		}))
-
 #### Virtual class for iView GUI child elements ####
 ## a widget or family of widgets in an iView GUI interface
 ## -------------------------------------------------------
@@ -71,60 +58,13 @@ setRefClass("iViewElement",
 		interface = "guiWidget"),
 	contains = c("iView", "VIRTUAL"))
 
-#### Class for a gNotebook widget ####
-## a tabbed interface for displaying multiple pages
-## ------------------------------------------------
-.iViewNotebook <- setRefClass("iViewNotebook",
-	fields = c(interface = "gNotebook"),
-	contains = "iViewElement",
-	methods = list(
-		initialize = function(...) {
-			interface <<- gnotebook(...)
-		}))
-
-#### Class for a gGroup widget ####
-## holds a group into which other iView widgets can be packed
-## ----------------------------------------------------------
-.iViewGroup <- setRefClass("iViewGroup",
-	fields = c(interface = "gGroup"),
-	contains = "iViewElement",
-	methods = list(
-		initialize = function(...) {
-			interface <<- ggroup(...)
-		}))
-
-#### Class for a gExpandGroup widget ####
-## holds a paned group with two dynamically-adjustable panes
-## ---------------------------------------------------------
-.iViewExpandGroup <- setRefClass("iViewExpandGroup",
-	fields = c(interface = "gExpandGroup"),
-	contains = "iViewElement",
-	methods = list(
-		initialize = function(...) {
-			interface <<- gexpandgroup(...)
-		}))
-
-#### Class for a gPanedGroup widget ####
-## holds a paned group with two dynamically-adjustable panes
-## ---------------------------------------------------------
-.iViewPanedGroup <- setRefClass("iViewPanedGroup",
-	fields = c(interface = "gPanedGroup"),
-	contains = "iViewElement",
-	methods = list(
-		initialize = function(...) {
-			interface <<- gpanedgroup(...)
-		}))
-
 #### Class for a gGraphics widget ####
 ## holds an updateable graphical plotting device
 ## ---------------------------------------------
-.iViewGraphics <- setRefClass("iViewGraphics",
+setRefClass("iViewGraphics",
 	fields = c(interface = "gGraphics"),
-	contains = "iViewElement",
+	contains = c("iViewElement", "VIRTUAL"),
 	methods = list(
-		initialize = function(...) {
-			interface <<- ggraphics(...)
-		},
 		refresh = function(...) {
 			visible(interface) <<- TRUE
 			callSuper(...)
@@ -143,9 +83,9 @@ setRefClass("iViewElement",
 #### Class for a control panel ####
 ## a group with updateable controls
 ## --------------------------------
-.iViewControls <- setRefClass("iViewControls",
+setRefClass("iViewControls",
 	fields = c(interface = "guiContainer"),
-	contains = "iViewElement",
+	contains = c("iViewElement", "VIRTUAL"),
 	methods = list(
 		update = function(...) {
 			dots <- list(...)
@@ -164,11 +104,12 @@ setRefClass("iViewElement",
 
 #### Class for a top-level a CardinaliView window ####
 ## ----------------------------------------------------
-.CardinaliViewWindow <- setRefClass("CardinaliViewWindow",
-	contains = "iViewWindow",
+.iViewWindow <- setRefClass("CardinaliViewWindow",
+	fields = c(interface = "gWindow"),
+	contains = "iView",
 	methods = list(
-		initialize = function(..., title="CardinaliView") {
-			callSuper(..., title=title)
+		initialize = function(..., visible=FALSE, title="CardinaliView") {
+			interface <<- gwindow(..., visible=visible, title=title)
 			toolbar <- list()
 			toolbar$Datasets <- gaction(
 				label="Datasets",
@@ -237,33 +178,35 @@ setRefClass("iViewElement",
 				handler=.clicked.Tab,
 				action=.self)
 			widgets$toolbar <<- gtoolbar(toolbarlist=toolbar, container=interface)
-			addElement(.CardinaliViewNotebook(), expand=TRUE)
+			addElement(.iViewNotebook(), expand=TRUE)
 		}))
 
 #### Class for a tabbed interface of CardinaliView groups ####
 ## -----------------------------------------------------------
-.CardinaliViewNotebook <- setRefClass("CardinaliViewNotebook",
-	contains = "iViewNotebook",
+.iViewNotebook <- setRefClass("iViewNotebook",
+	fields = c(interface = "gNotebook"),
+	contains = "iViewElement",
 	methods = list(
-		initialize = function(..., horizontal=FALSE,
-			use.scrollwindow=TRUE)
+		initialize = function(..., closebuttons=TRUE, dontCloseThese=1)
 		{
-			callSuper(..., closebuttons=TRUE, dontCloseTHese=1)
+			interface <<- gnotebook(...,
+				closebuttons=closebuttons,
+				dontCloseThese=dontCloseThese)
 			if ( length(children) == 0 ) {
-				addElement(.CardinaliViewGroup(), expand=TRUE,
+				addElement(.iViewTab(), expand=TRUE,
 					label="(no dataset)")
 			}
 		}))
 
 #### Class for holding expandable CardinaliView instances ####
 ## -----------------------------------------------------------
-.CardinaliViewGroup <- setRefClass("CardinaliViewGroup",
-	contains = "iViewGroup",
+.iViewTab <- setRefClass("iViewTab",
+	fields = c(interface = "gGroup"),
+	contains = "iViewElement",
 	methods = list(
-		initialize = function(..., horizontal=FALSE,
-			use.scrollwindow=TRUE)
-		{
-			callSuper(..., horizontal=horizontal,
+		initialize = function(..., horizontal=FALSE, use.scrollwindow=TRUE) {
+			interface <<- ggroup(...,
+				horizontal=horizontal,
 				use.scrollwindow=use.scrollwindow)
 			if ( length(children) == 0 )
 				addElement(.iViewMSImageSet(), expand=TRUE)
@@ -284,8 +227,9 @@ setRefClass("iViewElement",
 
 #### Virtual class for a single CardinaliView instance ####
 ## --------------------------------------------------------
-.CardinaliView <- setRefClass("CardinaliView",
-	contains = c("iViewExpandGroup", "VIRTUAL"),
+.iViewGroup <- setRefClass("iViewGroup",
+	fields = c(interface = "gExpandGroup"),
+	contains = c("iViewElement", "VIRTUAL"),
 	methods = list(
 		update = function(...) {
 			dots <- list(...)
@@ -326,7 +270,7 @@ setRefClass("iViewElement",
 
 .clicked.Tab <- function(h, ...) {
 	elt <- h$action$children[[1]]
-	elt$addElement(.CardinaliViewGroup(),
+	elt$addElement(.iViewTab(),
 		expand=TRUE, label="(no dataset)")
 }
 

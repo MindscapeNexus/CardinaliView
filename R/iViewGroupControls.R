@@ -1,7 +1,7 @@
 
 #### Class adding or closing a dataset view ####
 ## -------------------------------------
-.iViewAddControls <- setRefClass("iViewAddControls",
+.iViewGroupControls <- setRefClass("iViewGroupControls",
 	contains = "iViewControls",
 	methods = list(
 		initialize = function(...) {
@@ -36,7 +36,7 @@
 		}))
 
 .clicked.close.view <- function(h, ...) {
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( length(elt$parent$children) > 1 ) {
 		delete(elt$parent$interface, elt$interface)
 		for ( i in seq_along(elt$parent$children) ) {
@@ -47,12 +47,12 @@
 }
 
 .clicked.hide.view <- function(h, ...) {
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	visible(elt$interface) <- FALSE
 }
 
 .clicked.new.view <- function(h, ...) {
-	elt <- h$action$findParent("CardinaliViewGroup")
+	elt <- h$action$findParent("iViewTab")
 	elt$addElement(.iViewMSImageSet(), expand=TRUE)
 	visible(elt$children[[length(elt$children)]]$interface) <- TRUE
 }

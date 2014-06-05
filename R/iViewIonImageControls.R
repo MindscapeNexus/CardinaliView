@@ -210,9 +210,9 @@
 	x.max <- x + ((abs.x.max - x) / percent)
 	y.min <- y + ((abs.y.min - y) / percent)
 	y.max <- y + ((abs.y.max - y) / percent)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$img.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(x.min=x.min, x.max=x.max,
 			y.min=y.min, y.max=y.max,
 			with.properties=c(img.zoom.linked=TRUE))
@@ -224,16 +224,16 @@
 
 .changed.img.zoom.linked <- function(h, ...) {
 	img.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(img.zoom.linked=img.zoom.linked)
 }
 
 .changed.pixel <- function(h, ...) {
 	# NEED TO FIX TO CHANGE X AND Y AT THE SAME TIME
 	pixel <- as.integer(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$pixel.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(pixel=pixel,
 			with.properties=c(pixel.linked=TRUE))
 	} else {
@@ -243,16 +243,16 @@
 
 .changed.pixel.linked <- function(h, ...) {
 	value <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(pixel.linked=value)
 }
 
 .changed.x <- function(h, ...) {
 	# NEED TO FIX TO CHANGE PIXEL AT THE SAME TIME!
 	x <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$pixel.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(x=x,
 			with.properties=c(pixel.linked=TRUE))
 	} else {
@@ -263,9 +263,9 @@
 .changed.y <- function(h, ...) {
 	# NEED TO FIX TO CHANGE PIXEL AT THE SAME TIME!
 	y <- as.numeric(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$pixel.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(y=y,
 			with.properties=c(pixel.linked=TRUE))
 	} else {
@@ -281,9 +281,9 @@
 	img.intensity.min <- abs.img.intensity.min
 	img.intensity.max <- abs.img.intensity.min + 
 		((abs.img.intensity.max  - abs.img.intensity.min) / percent)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$img.intensity.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(img.intensity.min=img.intensity.min,
 			img.intensity.max=img.intensity.max,
 			with.properties=c(img.intensity.zoom.linked=TRUE))
@@ -295,15 +295,15 @@
 
 .changed.img.intensity.zoom.linked <- function(h, ...) {
 	img.intensity.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(img.intensity.zoom.linked=img.intensity.zoom.linked)
 }
 
 .changed.img.intensity.min <- function(h, ...) {
 	img.intensity.zoom.min <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$img.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(img.intensity.zoom.min=img.intensity.zoom.min,
 			with.properties=c(img.zoom.linked=TRUE))
 	} else {
@@ -313,9 +313,9 @@
 
 .changed.img.intensity.max <- function(h, ...) {
 	img.intensity.zoom.max <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$img.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(img.intensity.zoom.max=img.intensity.zoom.max,
 			with.properties=c(img.zoom.linked=TRUE))
 	} else {

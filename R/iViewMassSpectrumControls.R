@@ -227,9 +227,9 @@
 	mz <- h$action$plist$mz
 	mz.min <- mz + ((abs.mz.min - mz) / percent)
 	mz.max <- mz + ((abs.mz.max - mz) / percent)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(mz.min=mz.min, mz.max=mz.max,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -239,16 +239,16 @@
 
 .changed.ms.zoom.linked <- function(h, ...) {
 	ms.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(ms.zoom.linked=ms.zoom.linked)
 }
 
 .changed.feature <- function(h, ...) {
 	# NEED TO FIX TO CHANGE MZ AT THE SAME TIME!
 	feature <- as.integer(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(feature=feature,
 			with.properties=c(feature.linked=TRUE))
 	} else {
@@ -258,16 +258,16 @@
 
 .changed.feature.linked <- function(h, ...) {
 	value <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(feature.linked=value)
 }
 
 .changed.mz <- function(h, ...) {
 	# NEED TO FIX TO CHANGE FEATURE AT THE SAME TIME
 	mz <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(mz=mz,
 			with.properties=c(feature.linked=TRUE))
 	} else {
@@ -277,15 +277,15 @@
 
 .changed.mz.plusminus <- function(h, ...) {
 	mz.plusminus <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(mz.plusminus=mz.plusminus)
 }
 
 .changed.mz.min <- function(h, ...) {
 	mz.min <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(mz.min=mz.min,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -295,9 +295,9 @@
 
 .changed.mz.max <- function(h, ...) {
 	mz.max <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(mz.max=mz.max,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -313,9 +313,9 @@
 	ms.intensity.min <- abs.ms.intensity.min
 	ms.intensity.max <- abs.ms.intensity.min + 
 		((abs.ms.intensity.max  - abs.ms.intensity.min) / percent)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.intensity.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(ms.intensity.min=ms.intensity.min,
 			ms.intensity.max=ms.intensity.max,
 			with.properties=c(ms.intensity.zoom.linked=TRUE))
@@ -327,15 +327,15 @@
 
 .changed.ms.intensity.zoom.linked <- function(h, ...) {
 	ms.intensity.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	elt$update(ms.intensity.zoom.linked=ms.intensity.zoom.linked)
 }
 
 .changed.ms.intensity.min <- function(h, ...) {
 	ms.intensity.min <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(ms.intensity.min=ms.intensity.min,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {
@@ -345,9 +345,9 @@
 
 .changed.ms.intensity.max <- function(h, ...) {
 	ms.intensity.max <- round(as.numeric(svalue(h$obj)), digits=4)
-	elt <- h$action$findParent("CardinaliView")
+	elt <- h$action$findParent("iViewGroup")
 	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("CardinaliViewGroup")
+		elt <- elt$findParent("iViewTab")
 		elt$update(ms.intensity.max=ms.intensity.max,
 			with.properties=c(ms.zoom.linked=TRUE))
 	} else {

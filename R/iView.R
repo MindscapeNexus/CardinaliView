@@ -4,6 +4,7 @@
 ## ------------------------------------------------------
 setRefClass("iView",
 	fields = c(
+		uuid = "character",			# unique identifier
 		parent = "ANY",				# enclosing element
 		children = "list",			# child elements
 		interface = "ANY",			# interfacing widget
@@ -12,20 +13,30 @@ setRefClass("iView",
 		plist = "list"),			# properties
 	contains = "VIRTUAL",
 	methods = list(
+		setup = function(...) {
+			dots <- list(...)
+			for ( par in names(plist) ) {
+				if ( par %in% names(dots) ) {
+					plist[[par]] <<- dots[[par]]
+					if ( par %in% names(widgets) ) {
+						blockHandler(widgets[[par]], handlers[[par]])
+						svalue(widgets[[par]]) <<- dots[[par]]
+						unblockHandler(widgets[[par]], handlers[[par]])
+					}
+				}
+			}
+			for ( child in children )
+				child$setup(...)
+		},
 		addElement = function(child, ...) {
 			child$parent <- .self
-			children[[length(children)+1]] <<- child
+			children[[child$uuid]] <<- child
 			add(interface, child$interface, ...)
 		},
-		isDirty = function(...) {
-			dots <- match.call(expand.dots=FALSE)$...
-			any(names(plist) %in% names(dots))
-		},
-		refresh = function(..., all = FALSE) {
-			if ( all )
-				for ( child in children ) {
-					child$refresh(all)
-				}
+		refresh = function() {
+			for ( child in children ) {
+				child$refresh()
+			}
 		},
 		update = function(...) {
 			for ( child in children )
@@ -65,9 +76,9 @@ setRefClass("iViewGraphics",
 	fields = c(interface = "gGraphics"),
 	contains = c("iViewElement", "VIRTUAL"),
 	methods = list(
-		refresh = function(...) {
+		refresh = function() {
 			visible(interface) <<- TRUE
-			callSuper(...)
+			callSuper()
 		},
 		update = function(..., blocking=FALSE) {
 			dots <- list(...)
@@ -109,6 +120,7 @@ setRefClass("iViewControls",
 	contains = "iView",
 	methods = list(
 		initialize = function(..., visible=FALSE, title="CardinaliView") {
+			uuid <<- Cardinal:::uuid()
 			interface <<- gwindow(..., visible=visible, title=title)
 			toolbar <- list()
 			toolbar$Datasets <- gaction(
@@ -187,8 +199,8 @@ setRefClass("iViewControls",
 	fields = c(interface = "gNotebook"),
 	contains = "iViewElement",
 	methods = list(
-		initialize = function(..., closebuttons=TRUE, dontCloseThese=1)
-		{
+		initialize = function(..., closebuttons=TRUE, dontCloseThese=1) {
+			uuid <<- Cardinal:::uuid()
 			interface <<- gnotebook(...,
 				closebuttons=closebuttons,
 				dontCloseThese=dontCloseThese)
@@ -205,6 +217,7 @@ setRefClass("iViewControls",
 	contains = "iViewElement",
 	methods = list(
 		initialize = function(..., horizontal=FALSE, use.scrollwindow=TRUE) {
+			uuid <<- Cardinal:::uuid()
 			interface <<- ggroup(...,
 				horizontal=horizontal,
 				use.scrollwindow=use.scrollwindow)
@@ -265,7 +278,7 @@ setRefClass("iViewControls",
 }
 
 .clicked.Window <- function(h, ...) {
-	print("stub")	
+	.iView()
 }
 
 .clicked.Tab <- function(h, ...) {

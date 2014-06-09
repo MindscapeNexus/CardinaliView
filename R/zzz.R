@@ -1,6 +1,8 @@
 
 #### set up the GUI environments ####
 
+.CardinaliView <- new.env()
+
 .guiState <- new.env()
 .userState <- globalenv()
 

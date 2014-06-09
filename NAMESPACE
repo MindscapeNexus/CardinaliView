@@ -2,3 +2,5 @@
 import("Cardinal")
 
 export("CardinaliView", "iView", "freezeGUI")
+
+export(".iView")

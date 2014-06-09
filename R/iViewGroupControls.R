@@ -5,6 +5,7 @@
 	contains = "iViewControls",
 	methods = list(
 		initialize = function(...) {
+			uuid <<- Cardinal:::uuid()
 			interface <<- ggroup(...)
 			widgets$close.view <<- gbutton(
 				container=interface,
@@ -44,6 +45,8 @@
 				elt$parent$children <- elt$parent$children[-i]
 		}
 	}
+	closed <- which(names(elt$parent$children) == elt$uuid)
+	elt$parent$children <- elt$parent$children[-closed]
 }
 
 .clicked.hide.view <- function(h, ...) {

@@ -9,18 +9,20 @@
 
 .plot.MassSpectrum <- function(plist) {
 	tryCatch({
-		plot(1:100, rep(50, 100),
+		plot(get(plist$dataset, envir=globalenv()),
+			pixel=plist$pixel,
 			xlim=c(plist$mz.min, plist$mz.max),
 			ylim=c(plist$ms.intensity.min, plist$ms.intensity.max))
-		abline(v=plist$mz, lty=2, lwd=0.6, col="blue")
+		abline(v=plist$mz, lty=2, lwd=0.75, col="blue")
 	}, error=.plot.Error)
 }
 
 .plot.IonImage <- function(plist) {
 	tryCatch({
-		image(1:100, 1:100, matrix(seq(from=1, to=100, length.out=100^2), nrow=100),
+		image(get(plist$dataset, envir=globalenv()),
+			feature=plist$feature,
 			xlim=c(plist$x.min, plist$x.max),
-			ylim=c(plist$x.min, plist$x.max),
+			ylim=c(plist$y.min, plist$y.max),
 			zlim=c(plist$img.intensity.min, plist$img.intensity.max),
 			useRaster=TRUE)
 		points(plist$x, plist$y, pch=4, lwd=2, col="black")

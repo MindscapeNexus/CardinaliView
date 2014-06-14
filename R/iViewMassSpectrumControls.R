@@ -13,7 +13,7 @@
 			# properties list
 			plist$dataset <<- character(1)
 			plist$ms.zoom <<- numeric(1)
-			plist$ms.zoom.linked <<- logical(1)
+			# plist$ms.zoom.linked <<- logical(1)
 			plist$pixel <<- numeric(1)
 			plist$feature <<- numeric(1)
 			plist$feature.linked <<- logical(1)
@@ -22,7 +22,7 @@
 			plist$mz.min <<- numeric(1)
 			plist$mz.max <<- numeric(1)
 			plist$ms.intensity.zoom <<- numeric(1)
-			plist$ms.intensity.zoom.linked <<- logical(1)
+			# plist$ms.intensity.zoom.linked <<- logical(1)
 			plist$ms.intensity.min <<- numeric(1)
 			plist$ms.intensity.max <<- numeric(1)
 			# m/z - zoom
@@ -41,9 +41,9 @@
 			widgets$ms.zoomprcnt.label <<- glabel(
 				container=widgets$ms.zoom.group,
 				text="%")
-			widgets$ms.zoom.linked <<- gcheckbox(
-				container=widgets$ms.zoom.group,
-				text="")
+			# widgets$ms.zoom.linked <<- gcheckbox(
+			# 	container=widgets$ms.zoom.group,
+			# 	text="")
 			# m/z - feature
 			widgets$feature.group <<- ggroup(
 				container=interface,
@@ -124,9 +124,9 @@
 			widgets$ms.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$ms.intensity.zoom.group,
 				text="%")
-			widgets$ms.intensity.zoom.linked <<- gcheckbox(
-				container=widgets$ms.intensity.zoom.group,,
-				text="")
+			# widgets$ms.intensity.zoom.linked <<- gcheckbox(
+			# 	container=widgets$ms.intensity.zoom.group,,
+			# 	text="")
 			# intensity - range
 			widgets$ms.intensity.group <<- ggroup(
 				container=widgets$ms.intensity.frame,
@@ -150,10 +150,10 @@
 				obj=widgets$ms.zoom,
 				handler=.changed.ms.zoom,
 				action=.self)
-			handlers$ms.zoom.linked <<- addHandlerChanged(
-				obj=widgets$ms.zoom.linked,
-				handler=.changed.ms.zoom.linked,
-				action=.self)
+			# handlers$ms.zoom.linked <<- addHandlerChanged(
+			# 	obj=widgets$ms.zoom.linked,
+			# 	handler=.changed.ms.zoom.linked,
+			# 	action=.self)
 			handlers$feature <<- addHandlerChanged(
 				obj=widgets$feature,
 				handler=.changed.feature,
@@ -182,10 +182,10 @@
 				obj=widgets$ms.intensity.zoom,
 				handler=.changed.ms.intensity.zoom,
 				action=.self)
-			handlers$ms.intensity.zoom.linked <<- addHandlerChanged(
-				obj=widgets$ms.intensity.zoom.linked,
-				handler=.changed.ms.intensity.zoom.linked,
-				action=.self)
+			# handlers$ms.intensity.zoom.linked <<- addHandlerChanged(
+			# 	obj=widgets$ms.intensity.zoom.linked,
+			# 	handler=.changed.ms.intensity.zoom.linked,
+			# 	action=.self)
 			handlers$ms.intensity.min <<- addHandlerChanged(
 				obj=widgets$ms.intensity.min,
 				handler=.changed.ms.intensity.min,
@@ -235,36 +235,23 @@
 	mz.min <- mz + ((abs.mz.min - mz) / percent)
 	mz.max <- mz + ((abs.mz.max - mz) / percent)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(mz.min=mz.min, mz.max=mz.max,
-			with.properties=c(ms.zoom.linked=TRUE))
-	} else {
-		elt$update(mz.min=mz.min, mz.max=mz.max)
-	}
+	elt$update(mz.min=mz.min, mz.max=mz.max)
 }
 
-.changed.ms.zoom.linked <- function(h, ...) {
-	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
-	if ( !is(object, "MSImageSet") ) return()
-	ms.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewGroup")
-	elt$update(ms.zoom.linked=ms.zoom.linked)
-}
+# .changed.ms.zoom.linked <- function(h, ...) {
+# 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
+# 	if ( !is(object, "MSImageSet") ) return()
+# 	ms.zoom.linked <- as.logical(svalue(h$obj))
+# 	elt <- h$action$findParent("iViewGroup")
+# 	elt$update(ms.zoom.linked=ms.zoom.linked)
+# }
 
 .changed.feature <- function(h, ...) {
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
 	if ( !is(object, "MSImageSet") ) return()
 	feature <- as.integer(svalue(h$obj))
 	mz <- mz(object)[[feature]]
-	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(feature=feature, mz=mz,
-			with.properties=c(feature.linked=TRUE))
-	} else {
-		elt$update(feature=feature, mz=mz)
-	}
+	.update.feature(h$action, feature=feature, mz=mz)
 }
 
 .changed.feature.linked <- function(h, ...) {
@@ -280,14 +267,7 @@
 	if ( !is(object, "MSImageSet") ) return()
 	mz <- round(as.numeric(svalue(h$obj)), digits=4)
 	feature <- features(object, mz=mz)
-	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$feature.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(mz=mz, feature=feature,
-			with.properties=c(feature.linked=TRUE))
-	} else {
-		elt$update(mz=mz, feature=feature)
-	}
+	.update.feature(h$action, feature=feature, mz=mz)
 }
 
 # .changed.mz.plusminus <- function(h, ...) {
@@ -301,13 +281,7 @@
 	if ( !is(object, "MSImageSet") ) return()
 	mz.min <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(mz.min=mz.min,
-			with.properties=c(ms.zoom.linked=TRUE))
-	} else {
-		elt$update(mz.min=mz.min)
-	}
+	elt$update(mz.min=mz.min)
 }
 
 .changed.mz.max <- function(h, ...) {
@@ -315,13 +289,7 @@
 	if ( !is(object, "MSImageSet") ) return()
 	mz.max <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(mz.max=mz.max,
-			with.properties=c(ms.zoom.linked=TRUE))
-	} else {
-		elt$update(mz.max=mz.max)
-	}
+	elt$update(mz.max=mz.max)
 }
 
 .changed.ms.intensity.zoom <- function(h, ...) {
@@ -335,37 +303,24 @@
 	ms.intensity.max <- abs.ms.intensity.min + 
 		((abs.ms.intensity.max  - abs.ms.intensity.min) / percent)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.intensity.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(ms.intensity.min=ms.intensity.min,
-			ms.intensity.max=ms.intensity.max,
-			with.properties=c(ms.intensity.zoom.linked=TRUE))
-	} else {
-		elt$update(ms.intensity.min=ms.intensity.min,
-			ms.intensity.max=ms.intensity.max)
-	}
+	elt$update(ms.intensity.min=ms.intensity.min,
+		ms.intensity.max=ms.intensity.max)
 }
 
-.changed.ms.intensity.zoom.linked <- function(h, ...) {
-	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
-	if ( !is(object, "MSImageSet") ) return()
-	ms.intensity.zoom.linked <- as.logical(svalue(h$obj))
-	elt <- h$action$findParent("iViewGroup")
-	elt$update(ms.intensity.zoom.linked=ms.intensity.zoom.linked)
-}
+# .changed.ms.intensity.zoom.linked <- function(h, ...) {
+# 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
+# 	if ( !is(object, "MSImageSet") ) return()
+# 	ms.intensity.zoom.linked <- as.logical(svalue(h$obj))
+# 	elt <- h$action$findParent("iViewGroup")
+# 	elt$update(ms.intensity.zoom.linked=ms.intensity.zoom.linked)
+# }
 
 .changed.ms.intensity.min <- function(h, ...) {
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
 	if ( !is(object, "MSImageSet") ) return()
 	ms.intensity.min <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(ms.intensity.min=ms.intensity.min,
-			with.properties=c(ms.zoom.linked=TRUE))
-	} else {
-		elt$update(ms.intensity.min=ms.intensity.min)
-	}
+	elt$update(ms.intensity.min=ms.intensity.min)
 }
 
 .changed.ms.intensity.max <- function(h, ...) {
@@ -373,11 +328,6 @@
 	if ( !is(object, "MSImageSet") ) return()
 	ms.intensity.max <- round(as.numeric(svalue(h$obj)), digits=4)
 	elt <- h$action$findParent("iViewGroup")
-	if ( elt$plist$ms.zoom.linked ) {
-		elt <- elt$findParent("iViewTab")
-		elt$update(ms.intensity.max=ms.intensity.max,
-			with.properties=c(ms.zoom.linked=TRUE))
-	} else {
-		elt$update(ms.intensity.max=ms.intensity.max)
-	}
+	elt$update(ms.intensity.max=ms.intensity.max)
 }
+

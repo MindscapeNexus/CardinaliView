@@ -49,7 +49,7 @@
 			while (gtkEventsPending())
 				gtkMainIterationDo(blocking=FALSE)
 			Sys.sleep(0.1)
-			refresh()
+			refresh(force=TRUE)
 		},
 		update=function(...) {
 			callSuper(...)
@@ -100,6 +100,7 @@
 	} else {
 		stop(deparse(substitute(data)), " is not an MSImageSet")
 	}
+	invisible(w)
 }
 
 

@@ -40,13 +40,9 @@
 	elt <- h$action$findParent("iViewGroup")
 	if ( length(elt$parent$children) > 1 ) {
 		delete(elt$parent$interface, elt$interface)
-		for ( i in seq_along(elt$parent$children) ) {
-			if ( !isExtant(elt$parent$children[[i]]$interface) )
-				elt$parent$children <- elt$parent$children[-i]
-		}
+		closed <- which(names(elt$parent$children) == elt$uuid)
+		elt$parent$children <- elt$parent$children[-closed]
 	}
-	closed <- which(names(elt$parent$children) == elt$uuid)
-	elt$parent$children <- elt$parent$children[-closed]
 }
 
 .clicked.hide.view <- function(h, ...) {

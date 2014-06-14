@@ -7,25 +7,34 @@
 	text(0, 0, labels="Plot not available.")
 }
 
-.plot.MassSpectrum <- function(plist) {
+.plot.MassSpectrum <- function(elt) {
+	visible(elt$interface) <- TRUE
 	tryCatch({
-		plot(get(plist$dataset, envir=globalenv()),
-			pixel=plist$pixel,
-			xlim=c(plist$mz.min, plist$mz.max),
-			ylim=c(plist$ms.intensity.min, plist$ms.intensity.max))
-		abline(v=plist$mz, lty=2, lwd=0.75, col="blue")
+		with(elt$plist, {
+			plot(get(dataset, envir=globalenv()),
+				pixel=pixel,
+				xlim=c(mz.min, mz.max),
+				ylim=c(ms.intensity.min, ms.intensity.max))
+			abline(v=mz, lty=2, lwd=0.75, col="blue")
+		})
 	}, error=.plot.Error)
+	elt$dirty <- FALSE
 }
 
-.plot.IonImage <- function(plist) {
+.plot.IonImage <- function(elt) {
+	visible(elt$interface) <- TRUE
 	tryCatch({
-		image(get(plist$dataset, envir=globalenv()),
-			feature=plist$feature,
-			xlim=c(plist$x.min, plist$x.max),
-			ylim=c(plist$y.min, plist$y.max),
-			zlim=c(plist$img.intensity.min, plist$img.intensity.max),
-			useRaster=TRUE)
-		points(plist$x, plist$y, pch=4, lwd=2, col="black")
-		points(plist$x, plist$y, pch=4, lwd=1, col="white")
+		with(elt$plist, {
+			image(get(dataset, envir=globalenv()),
+				feature=feature,
+				xlim=c(x.min, x.max),
+				ylim=c(y.min, y.max),
+				zlim=c(img.intensity.min, img.intensity.max),
+				contrast.enhance=Cardinal:::contrast.enhance.histogram,
+				useRaster=TRUE)
+			points(x, y, pch=4, lwd=2, col="black")
+			points(x, y, pch=4, lwd=1, col="white")
+		})
 	}, error=.plot.Error)
+	elt$dirty <- FALSE
 }

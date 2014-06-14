@@ -33,9 +33,9 @@ setRefClass("iView",
 			children[[child$uuid]] <<- child
 			add(interface, child$interface, ...)
 		},
-		refresh = function() {
+		refresh = function(force=FALSE) {
 			for ( child in children ) {
-				child$refresh()
+				child$refresh(force=force)
 			}
 		},
 		update = function(...) {
@@ -73,15 +73,15 @@ setRefClass("iViewElement",
 ## holds an updateable graphical plotting device
 ## ---------------------------------------------
 setRefClass("iViewGraphics",
-	fields = c(interface = "gGraphics"),
+	fields = c(
+		interface = "gGraphics",
+		dirty = "logical"),
 	contains = c("iViewElement", "VIRTUAL"),
 	methods = list(
-		refresh = function() {
-			visible(interface) <<- TRUE
-			callSuper()
-		},
 		update = function(..., blocking=FALSE) {
 			dots <- list(...)
+			if ( any(names(dots) %in% names(plist)) )
+				dirty <<- TRUE
 			for ( par in names(plist) ) {
 				if ( par %in% names(dots) )
 					plist[[par]] <<- dots[[par]]

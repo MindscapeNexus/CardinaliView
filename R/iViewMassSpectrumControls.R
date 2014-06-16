@@ -41,9 +41,6 @@
 			widgets$ms.zoomprcnt.label <<- glabel(
 				container=widgets$ms.zoom.group,
 				text="%")
-			# widgets$ms.zoom.linked <<- gcheckbox(
-			# 	container=widgets$ms.zoom.group,
-			# 	text="")
 			# m/z - feature
 			widgets$feature.group <<- ggroup(
 				container=interface,
@@ -124,9 +121,6 @@
 			widgets$ms.intensity.zoomprcnt.label <<- glabel(
 				container=widgets$ms.intensity.zoom.group,
 				text="%")
-			# widgets$ms.intensity.zoom.linked <<- gcheckbox(
-			# 	container=widgets$ms.intensity.zoom.group,,
-			# 	text="")
 			# intensity - range
 			widgets$ms.intensity.group <<- ggroup(
 				container=widgets$ms.intensity.frame,
@@ -150,10 +144,6 @@
 				obj=widgets$ms.zoom,
 				handler=.changed.ms.zoom,
 				action=.self)
-			# handlers$ms.zoom.linked <<- addHandlerChanged(
-			# 	obj=widgets$ms.zoom.linked,
-			# 	handler=.changed.ms.zoom.linked,
-			# 	action=.self)
 			handlers$feature <<- addHandlerChanged(
 				obj=widgets$feature,
 				handler=.changed.feature,
@@ -182,10 +172,6 @@
 				obj=widgets$ms.intensity.zoom,
 				handler=.changed.ms.intensity.zoom,
 				action=.self)
-			# handlers$ms.intensity.zoom.linked <<- addHandlerChanged(
-			# 	obj=widgets$ms.intensity.zoom.linked,
-			# 	handler=.changed.ms.intensity.zoom.linked,
-			# 	action=.self)
 			handlers$ms.intensity.min <<- addHandlerChanged(
 				obj=widgets$ms.intensity.min,
 				handler=.changed.ms.intensity.min,
@@ -238,14 +224,6 @@
 	elt$update(mz.min=mz.min, mz.max=mz.max)
 }
 
-# .changed.ms.zoom.linked <- function(h, ...) {
-# 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
-# 	if ( !is(object, "MSImageSet") ) return()
-# 	ms.zoom.linked <- as.logical(svalue(h$obj))
-# 	elt <- h$action$findParent("iViewGroup")
-# 	elt$update(ms.zoom.linked=ms.zoom.linked)
-# }
-
 .changed.feature <- function(h, ...) {
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
 	if ( !is(object, "MSImageSet") ) return()
@@ -269,12 +247,6 @@
 	feature <- features(object, mz=mz)
 	.update.feature(h$action, feature=feature, mz=mz)
 }
-
-# .changed.mz.plusminus <- function(h, ...) {
-# 	mz.plusminus <- round(as.numeric(svalue(h$obj)), digits=4)
-# 	elt <- h$action$findParent("iViewGroup")
-# 	elt$update(mz.plusminus=mz.plusminus)
-# }
 
 .changed.mz.min <- function(h, ...) {
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
@@ -306,14 +278,6 @@
 	elt$update(ms.intensity.min=ms.intensity.min,
 		ms.intensity.max=ms.intensity.max)
 }
-
-# .changed.ms.intensity.zoom.linked <- function(h, ...) {
-# 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
-# 	if ( !is(object, "MSImageSet") ) return()
-# 	ms.intensity.zoom.linked <- as.logical(svalue(h$obj))
-# 	elt <- h$action$findParent("iViewGroup")
-# 	elt$update(ms.intensity.zoom.linked=ms.intensity.zoom.linked)
-# }
 
 .changed.ms.intensity.min <- function(h, ...) {
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)

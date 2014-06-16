@@ -86,22 +86,4 @@
 			addElement(.iViewIonImage(width=400, height=400))
 		}))
 
-.iView <- function(data) {
-	w <- .iViewWindow()
-	.CardinaliView[[Cardinal:::uuid()]] <- w
-	visible(w$interface) <- TRUE
-	while (gtkEventsPending())
-		gtkMainIterationDo(blocking=FALSE)
-	Sys.sleep(0.1)
-	if ( missing(data) ) {
-		w$refresh()
-	} else if ( is(data, "MSImageSet") ) {
-		w$update(dataset=deparse(substitute(data)))
-	} else {
-		stop(deparse(substitute(data)), " is not an MSImageSet")
-	}
-	invisible(w)
-}
-
-
 

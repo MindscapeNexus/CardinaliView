@@ -189,7 +189,8 @@ setRefClass("iViewControls",
 				obj=toolbar$Tab,
 				handler=.clicked.Tab,
 				action=.self)
-			widgets$toolbar <<- gtoolbar(toolbarlist=toolbar, container=interface)
+			# widgets$toolbar <<- gtoolbar(toolbarlist=toolbar, container=interface)
+			widgets$toolbar <<- gtoolbar(toolbarlist=toolbar)
 			addElement(.iViewNotebook(), expand=TRUE)
 		}))
 
@@ -252,6 +253,34 @@ setRefClass("iViewControls",
 			}
 			callSuper(...)
 		}))
+
+CardinaliView <- function() {
+	w <- .iViewWindow()
+	.CardinaliView[[Cardinal:::uuid()]] <- w
+	visible(w$interface) <- TRUE
+	while (gtkEventsPending())
+		gtkMainIterationDo(blocking=FALSE)
+	Sys.sleep(0.1)
+	w$refresh()
+	invisible(w)
+}
+
+iView <- function(data) {
+	w <- .iViewWindow()
+	.CardinaliView[[Cardinal:::uuid()]] <- w
+	visible(w$interface) <- TRUE
+	while (gtkEventsPending())
+		gtkMainIterationDo(blocking=FALSE)
+	Sys.sleep(0.1)
+	if ( missing(data) ) {
+		w$refresh()
+	} else if ( is(data, "MSImageSet") ) {
+		w$update(dataset=deparse(substitute(data)))
+	} else {
+		stop(deparse(substitute(data)), " is not an MSImageSet")
+	}
+	invisible(w)
+}
 
 .clicked.Datasets <- function(h, ...) {
 	print("stub")

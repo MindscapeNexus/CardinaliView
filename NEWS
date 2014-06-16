@@ -2,13 +2,16 @@
 NEWS for CardinaliView package
 ------------------------------
 
+Version 0.7.0 [2014-6-16]
+
+o First public beta available for ASMS 2014.
+
 Version 0.6 [2014-6-3]
 
 o Rewritten with a new class structure using Reference Classes
 o New object-oriented design of all aspects of the GUI 
 o Focus on visualization and comparison of multiple datasets
 o Switch to a single-window tabbed design with expandable views
-o Old GUI still available
 
 Version 0.5 [2014-2-19]
 

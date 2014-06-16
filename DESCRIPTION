@@ -1,14 +1,12 @@
 Package: CardinaliView
 Type: Package
 Title: Graphical user interface for the Cardinal mass spectrometry imaging package
-Version: 0.6
+Version: 0.7.0
 Date: 2014-6-3
 Author: Kyle D. Bemis
 Maintainer: Kyle D. Bemis <kbemis@purdue.edu>
-Description: A graphical user interface for visualization and analysis
-	of mass spectrometry images, from manipulation of mass spectra and
-	single-ion images, to region-of-interest comparison, spatial segmentation,
-	and supervised classification.
+Description: A graphical user interface for Cardinal: visualization
+	and exploration of mass spectrometry imaging experiments.
 License: Artistic 2.0
 LazyLoad: yes
 Depends: Cardinal, RGtk2, cairoDevice, gWidgetsRGtk2

@@ -2,6 +2,8 @@
 TODO for CardinaliView package
 ------------------------------
 
-- add processing contro panels
-- fix updates from control panel (doesn't update intensity range)
-
+- add working toolbar
+- add dataset manager
+- add pre-processing control panels
+- add analysis control panels
+- add results views

@@ -30,6 +30,7 @@
 		}))
 
 .update.pixel <- function(elt, pixel, x, y) {
+	if ( length(pixel) != 1 ) return()
 	object <- try(get(elt$plist$dataset, envir=globalenv()), silent=TRUE)
 	ms.intensity.min <- min(spectra(object)[,pixel])
 	ms.intensity.max <- max(spectra(object)[,pixel])
@@ -51,19 +52,18 @@
 	object <- try(get(h$action$plist$dataset, envir=globalenv()), silent=TRUE)
 	if ( !is(object, "MSImageSet") ) return()
 	if ( abs(diff(h$x)) < 1 || abs(diff(h$y)) < 1 ) {
-		x <- as.integer(h$x[[1]])
-		y <- as.integer(h$y[[1]])
+		x <- round(h$x[[1]])
+		y <- round(h$y[[1]])
 		pixel <- pixels(object, x=x, y=y)
 		.update.pixel(h$action, pixel=pixel, x=x, y=y)
 	} else {
-		x.min <- min(as.integer(h$x))
-		x.max <- max(as.integer(h$x))
-		y.min <- min(as.integer(h$y))
-		y.max <- max(as.integer(h$y))
+		x.min <- min(round(h$x))
+		x.max <- max(round(h$x))
+		y.min <- min(round(h$y))
+		y.max <- max(round(h$y))
 		elt <- h$action$findParent("iViewGroup")
 		elt$update(x.min=x.min, x.max=x.max,
 			y.min=y.min, y.max=y.max)
 	}
 }
-
 

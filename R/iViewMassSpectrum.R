@@ -27,10 +27,11 @@
 		}))
 
 .update.feature <- function(elt, feature, mz) {
-	elt <- elt$findParent("iViewGroup")
+	if ( length(feature) != 1 ) return()
 	object <- try(get(elt$plist$dataset, envir=globalenv()), silent=TRUE)
 	img.intensity.min <- min(spectra(object)[feature,])
 	img.intensity.max <- max(spectra(object)[feature,])
+	elt <- elt$findParent("iViewGroup")
 	if ( elt$plist$feature.linked ) {
 		elt$findParent("iViewTab")$update(
 			mz=mz, feature=feature,

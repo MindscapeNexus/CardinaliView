@@ -1,6 +1,5 @@
 
 import("Cardinal")
 
-export("CardinaliView", "iView", "freezeGUI")
+export("CardinaliView", "iView")
 
-export(".iView")

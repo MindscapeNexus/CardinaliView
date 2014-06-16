@@ -30,7 +30,6 @@
 				xlim=c(x.min, x.max),
 				ylim=c(y.min, y.max),
 				zlim=c(img.intensity.min, img.intensity.max),
-				contrast.enhance=Cardinal:::contrast.enhance.histogram,
 				useRaster=TRUE)
 			points(x, y, pch=4, lwd=2, col="black")
 			points(x, y, pch=4, lwd=1, col="white")
